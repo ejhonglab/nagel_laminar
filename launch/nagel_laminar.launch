@@ -1,0 +1,46 @@
+<launch>
+  <arg name="port" default="/dev/ttyACM0" />
+  <arg name="video_only" default="False" />
+  <arg name="debug" default="False" />
+  
+  <env if="$(arg debug)" name="ROSCONSOLE_CONFIG_FILE" value="$(find laminar2d)/etc/debug_rosconsole.conf" />
+  
+  <!-- TODO put snapshot_params node in this package, add another node tag -->
+  <node name="versionpub" pkg="metatools" type="versionpub.py">
+    <rosparam>
+      package_names: ['metatools', 'nagel_laminar', 'multi_tracker', 'stimuli']
+    </rosparam>
+  </node>
+
+  <node name="camera" pkg="pointgrey_camera_driver" type="camera_node" required="true" />
+  <node name="image_proc" pkg="image_proc" type="image_proc" output="screen" ns="camera" />
+
+  <!-- TODO reasonable to set these all as default in package directories and
+       only set non defaults locally? -->
+  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup
+       default handling -->
+  <include 
+    file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch"/>
+
+  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch">
+    <arg name="video_only" value="$(arg video_only)" />
+    <!-- TODO how best to treat this when retracking?
+         should i aim for a package wide policy of remapping cameras 
+         to camera/image_raw? or package wide policy of always
+         doing this just when retracking? i kind of like the former better
+         but it might take more work? -->
+    <arg name="camera" value="usb_cam/image_rect" />
+  </include>
+
+  <!--
+  <rosparam command="load" file="stimulus_parameters.yaml" />
+
+  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py"
+    output="screen" required="true" />
+ 
+  <include file="$(find stimuli)/launch/stimulus_arduino.launch">
+    <arg name="port" value="$(arg port)" />
+  </include>
+  -->
+
+</launch>

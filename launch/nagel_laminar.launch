@@ -1,46 +1,96 @@
 <launch>
+  <!-- Only runs the valve program. Does no video acquisition or tracking.
+  Can be used to PID with the same stimulus parameters + code as your experiment. -->
+  <arg name="stimuli_only" default="False" />
+
+  <!-- If True, will use labjack ROS package to acquire PID data.
+       Expects labjack.yaml with configuration if enabled.
+  -->
+  <arg name="pid" default="False" />
+
+  <!-- Port the Arduino controlling the valves is connected to -->
   <arg name="port" default="/dev/ttyACM0" />
+
+  <!-- Only record the delta-video, rather than doing the tracking as well.
+  Can be tracked later by playing back the delta-vieo, though this is a bit more
+  complicated for the user. Only use if computer can't handle doing the tracking
+  at acquisition-time. -->
   <arg name="video_only" default="False" />
-  <arg name="debug" default="False" />
+
+  <group unless="$(arg stimuli_only)">
+    <!-- TODO also include labjack in here *if* pid:=True -->
+    <!-- TODO put snapshot_params node in this package, add another node tag -->
+    <node name="versionpub" pkg="metatools" type="versionpub.py">
+      <rosparam>
+        package_names: ['metatools', 'nagel_laminar', 'multi_tracker', 'stimuli', 'rosserial_arduino']
+      </rosparam>
+    </node>
+
+    <node name="pointgrey_camera_node" pkg="pointgrey_camera_driver" type="camera_node" required="true" ns="camera" output="screen"/>
+
+    <!-- TODO fix how i'm finding the camera calibration. currently I copied it
+    to data/.../camera_info/0.yaml, but would need to copy it to any subsequent
+    data directories too.
+
+    pointgrey_camera_driver's camera.launch and / or choice's choice.launch
+    might have some clues as to how to set up the camera to find the calibration
+    either where it is originally "Commit"-ed (from the calibration program) or
+    from some explicit path
+    -->
+    <!-- Uses pre-generated camera calibration to invert geometric distortion of
+    camera lens (the "fish-eye" effect, etc).
+    Compare the image streams in the /camera/image_raw and /camera/image_rect
+    topic to see what this is doing. -->
+    <node name="image_proc" pkg="image_proc" type="image_proc" output="screen" ns="camera" required="true"/>
+
+    <!-- Loads the following configuration files:
+    - tracker_parameters.yaml
+    - data_association_parameters.yaml
+    - liveviewer_parameters.yaml
+    - delta_video_parameters.yaml
+
+    When roslaunch is invoked as "ROS_HOME=`pwd` roslaunch ..." (I generally
+    alias roslaunch to always have this prefix on the acquisition computers) this loads
+    these configuration files from the current directory
+    -->
+    <include file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch"/>
+
+    <!-- Allows manual entry of ROIs, and spawns an independent tracking pipeline
+    for each. -->
+    <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch">
+      <arg name="video_only" value="$(arg video_only)" />
+      <arg name="camera" value="camera/image_rect" />
+    </include>
+  </group>
+
+  <group if="$(arg pid)">
+    <!-- Can be configured to save data on additional channels, such as a valve
+         control signal -->
+    <rosparam command="load" file="labjack.yaml" />
+
+    <node name="labjack" pkg="labjack" type="labjack" output="screen" required="true" />
+  </group>
+
+  <!-- Loads parameters for the following nagel.py node.
+  If roslaunch is aliased as described above, this is loaded from the
+  current directory.
+  -->
+  <rosparam command="load" file="nagel_stimulus_parameters.yaml" />
+  <rosparam param="olf/wait_for_keypress" if="$(arg stimuli_only)"> false </rosparam>
+
+  <!-- Sends the trial structure to the Arduino.
   
-  <env if="$(arg debug)" name="ROSCONSOLE_CONFIG_FILE" value="$(find laminar2d)/etc/debug_rosconsole.conf" />
-  
-  <!-- TODO put snapshot_params node in this package, add another node tag -->
-  <node name="versionpub" pkg="metatools" type="versionpub.py">
-    <rosparam>
-      package_names: ['metatools', 'nagel_laminar', 'multi_tracker', 'stimuli']
-    </rosparam>
-  </node>
-
-  <node name="camera" pkg="pointgrey_camera_driver" type="camera_node" required="true" />
-  <node name="image_proc" pkg="image_proc" type="image_proc" output="screen" ns="camera" />
-
-  <!-- TODO reasonable to set these all as default in package directories and
-       only set non defaults locally? -->
-  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup
-       default handling -->
-  <include 
-    file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch"/>
-
-  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch">
-    <arg name="video_only" value="$(arg video_only)" />
-    <!-- TODO how best to treat this when retracking?
-         should i aim for a package wide policy of remapping cameras 
-         to camera/image_raw? or package wide policy of always
-         doing this just when retracking? i kind of like the former better
-         but it might take more work? -->
-    <arg name="camera" value="usb_cam/image_rect" />
-  </include>
-
-  <!--
-  <rosparam command="load" file="stimulus_parameters.yaml" />
-
-  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py"
-    output="screen" required="true" />
+  This node will run for the length of the experiment, and when it dies, that
+  will trigger the other processses to shut down as well.
+  -->
+  <node name="stimulus_loader" pkg="stimuli" type="nagel.py" output="screen" required="true" />
  
+  <!-- Starts the (rosserial) interface between the host computer and the
+  Arduino. Necessary for the above node to communicate trial structure / valve 
+  information to the Arduino.
+  -->
   <include file="$(find stimuli)/launch/stimulus_arduino.launch">
     <arg name="port" value="$(arg port)" />
   </include>
-  -->
 
 </launch>

@@ -33,6 +33,9 @@
   <!--   <buildtool_depend>catkin</buildtool_depend> -->
 
   <build_depend>message_generation</build_depend>
+
+  <!-- TODO convert run_depend to exec_depend to conform to version 2
+       package.xml. may need to convert other things too. -->
   <run_depend>message_runtime</run_depend> -->
 
   <!-- Use test_depend for packages you need only for testing: -->

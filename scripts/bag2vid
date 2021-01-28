@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Assumes the current directory has the *_stimuli.p and *_delta_video.bag
+# necessary for these two scripts, respectively.
+
+# This script will print out (only) the name of the file it's writing to, by
+# default, so we capture it to use the filename as input to the next command.
+CSV="$(rosrun nagel_laminar make_stimuli_csv)"
+
+# TODO maybe try to suppress -c / -o from help if we are hardcoding them?
+# (maybe easier to do via a python script?)
+
+# -o because we are assuming this script is being invoked manually and thus we
+# likely want to overwrite the output, particularly if the pre-existing .avi was
+# created with multi_tracker bag2vid.py, and lacks the overlay that will be
+# created when called with the extra arguments this script provides.
+rosrun multi_tracker bag2vid.py -o -c $CSV $@
+

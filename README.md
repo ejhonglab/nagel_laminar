@@ -44,7 +44,7 @@ start the stimulus program.
 - `z`/`u`: undo
 - `y`/`r`: redo
 
-Other reserved keys are: `l`, `x`, `d`, `s`
+Other reserved keys are: `l`, `d`, `s`
 
 ##### Stopping early
 

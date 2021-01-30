@@ -80,8 +80,8 @@ rosrun nagel_laminar bag2vid
 The .avi file will also have an overlay in the bottom middle of the screen that
 says "Odor On" on the frames when the odor is being delivered.
 
-Note: terminal shortcut for opening file is: `xdg-open <name-of-file>`
-(equivalent to clicking on the file in the file explorer).
+Note: to open video `vlc <name-of-file>`. You can change the speed of the playback
+with the `[` and `]` keys.
 
 #### Inputs
 - `choice_<YYYYMMDD>_<HHMMSS>_delta_video.bag`

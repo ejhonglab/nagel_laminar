@@ -94,6 +94,19 @@ with the `[` and `]` keys.
 - `choice_<YYYYMMDD>_<HHMMSS>_stimuli.csv`
 
 
+### Convert `.hdf5` tracking data to `.csv`
+
+```
+rosrun multi_tracker hdf5_to_csv.py
+```
+
+#### Inputs
+- `choice_<YYYYMMDD>_<HHMMSS>_N<ROI>_trackedobjects.hdf5`
+
+#### Outputs
+- `choice_<YYYYMMDD>_<HHMMSS>_N<ROI>_trackedobjects.csv`
+
+
 ### PID
 The same command to run a full experiment above can be used for PID, if you add
 additional options as follows:
@@ -129,4 +142,8 @@ cd arduino-1.8.3/
 In the Arduino IDE:
 - Open `File`->`Examples`->`stimuli`->`stimuli`
 - Press upload (OK to ignore the compiler warnings)
+
+If you don't see an entry for `stimuli` under the example menu, see the
+instructions for how to set up the stimuli code under [the repo for that
+project](https://github.com/tom-f-oconnell/stimuli).
 

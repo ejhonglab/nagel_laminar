@@ -139,6 +139,16 @@ hostname prefix in the directories created when also tracking), containing:
 - `choice_<YYYYMMDD>_<HHMMSS>_stimuli.p`
 - `pid.csv`
 
+#### Plotting PID
+```
+cd <YYYYMMDD>_<HHMMSS>
+rosrun nagel_laminar plot_pid.py
+```
+...or:
+```
+rosrun nagel_laminar plot_pid.py <YYYYMMDD>_<HHMMSS>
+```
+
 
 ### Setting up the Arduino
 Stimulus delivery with this system requires specific code to be uploaded to the

@@ -17,7 +17,6 @@ You will likely not need to change any of these files apart from
 `nagel_stimulus_parameters.yaml`, though if you'd like to run experiments from
 another directory you must copy all of these files to that new directory.
 
-
 ### Running an experiment
 
 Open a terminal (`Ctrl-Alt-t` or clicking on its icon), and enter the following
@@ -65,6 +64,19 @@ A folder will be created inside the directory where you ran
 - `choice_<YYYYMMDD>_<HHMMSS>_..._parameters.yaml`
 - `compressor_rois_<YYYYMDD>_<HHMSS>_N1.yaml`
 - `full_background.png`
+
+
+### Testing the valves
+```
+cd ~/data/2020_test
+roslaunch nagel_laminar test_valves.launch
+```
+
+This will cycle through the valves from lowest pin number to highest. Listen for
+the valve clicks. Press `Ctrl-C` to quit.
+
+You should do this at least at the beginning of every experimental day, and
+probably also at the end.
 
 
 ### Convert `.bag` to `.avi` file

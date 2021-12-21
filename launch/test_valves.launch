@@ -1,0 +1,26 @@
+<launch>
+  <!-- Port the Arduino controlling the valves is connected to -->
+  <arg name="port" default="/dev/ttyACM0" />
+
+  <!-- Loads parameters for the following nagel.py node.
+  If roslaunch is aliased as described above, this is loaded from the
+  current directory.
+  -->
+  <rosparam command="load" file="nagel_stimulus_parameters.yaml" />
+
+  <!-- Sends the trial structure to the Arduino.
+  
+  This node will run for the length of the experiment, and when it dies, that
+  will trigger the other processses to shut down as well.
+  -->
+  <node name="stimulus_loader" pkg="stimuli" type="test_valves.py" output="screen" required="true" />
+ 
+  <!-- Starts the (rosserial) interface between the host computer and the
+  Arduino. Necessary for the above node to communicate trial structure / valve 
+  information to the Arduino.
+  -->
+  <include file="$(find stimuli)/launch/stimulus_arduino.launch">
+    <arg name="port" value="$(arg port)" />
+  </include>
+
+</launch>

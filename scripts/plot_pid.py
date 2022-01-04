@@ -20,14 +20,28 @@ def main():
     csv_fname = join(csv_dir, csv_basename)
     df = pd.read_csv(csv_fname)
 
+    # TODO delete
+    #df = df.loc[(df.time_s >= 10.5) & (df.time_s <= 112)].copy()
+    #df.time_s = df.time_s - df.time_s.iloc[0]
+    #
+
+    show_valve = True
+
     fig, ax = plt.subplots()
-    # TODO either rescale (ideally just at matplotlib level) or just show >2.5 as region
-    # behind (maybe CLI flag to hide entirely)
-    #ax.plot(df.time_s, df.valve_control, label='Valve')
     ax.plot(df.time_s, df.pid_v, label='PID')
+
+    if show_valve:
+        df.valve_control = (df.valve_control > 2.5) * 2
+
+        # TODO either rescale (ideally just at matplotlib level) or just show >2.5 as
+        # region behind (maybe CLI flag to hide entirely)
+        ax.plot(df.time_s, df.valve_control, label='Valve')
+
     ax.set_xlabel('Seconds')
     ax.set_ylabel('PID (a.u.)')
-    # TODO legend (only if also showing valve?)
+
+    if show_valve:
+        ax.legend()
 
     fig_fname = join(csv_dir, 'pid.svg')
     fig.savefig(fig_fname)

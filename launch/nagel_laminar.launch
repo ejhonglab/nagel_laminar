@@ -26,6 +26,11 @@
       </rosparam>
     </node>
 
+    <!-- NOTE: that the namespace here is the concatenation of the namespace
+         used for the camera node + the camera node's name
+    -->
+    <rosparam command="load" file="pointgrey_flea3.yaml" ns="camera/pointgrey_camera_node" />
+
     <node name="pointgrey_camera_node" pkg="pointgrey_camera_driver" type="camera_node" required="true" ns="camera" output="screen"/>
 
     <!-- TODO fix how i'm finding the camera calibration. currently I copied it

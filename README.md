@@ -7,7 +7,7 @@ Other required configuration files are:
 - `debug_flags.yaml`
 - `delta_video_parameters.yaml`
 - `liveviewer_parameters.yaml`
-- `pointgrey_blackfly.yaml`
+- `pointgrey_flea3.yaml`
 - `roi_finder.yaml`
 - `tracker_parameters.yaml`
 - `kalman_parameters.py`

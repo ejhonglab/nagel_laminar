@@ -129,6 +129,11 @@ roslaunch nagel_laminar nagel_laminar.launch pid:=True stimuli_only:=True
 If you'd like to PID while doing video data acquisition / tracking, you may omit
 the `stimuli_only:=True` flag.
 
+Note that doing the PID also requires that our package
+[ros_labjack](https://github.com/ejhonglab/ros_labjack) is installed. It is NOT
+the same as
+[this package with a similar name](https://github.com/ejhonglab/labjack).
+
 #### Inputs
 - `nagel_stimulus_parameters.yaml`
 - `labjack.yaml`
